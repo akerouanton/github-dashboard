@@ -1,0 +1,9 @@
+suites:
+    default:
+        namespace: NiR\GhDashboard
+        psr4_prefix: NiR\GhDashboard
+
+extensions:
+    Memio\SpecGen\MemioSpecGenExtension: ~
+
+formatter.name: pretty
