@@ -6,8 +6,9 @@ namespace NiR\GhDashboard\Tests\Ingestion\Infratructure;
 
 use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\DriverManager;
+use NiR\GhDashboard\Ingestion\DataAccess\DoctrineRawEventTable;
 use NiR\GhDashboard\Ingestion\Domain;
-use NiR\GhDashboard\Ingestion\Infrastructure\DoctrineRawEventPersister;
+use NiR\GhDashboard\Ingestion\DataAccess\DoctrineRawEventPersister;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -47,11 +48,8 @@ class DoctrineRawEventPersisterTest extends TestCase
         $manager = $this->connection->getSchemaManager();
         $schema  = $manager->createSchema();
 
-        $table = $schema->createTable('raw_event');
-        $table->addColumn('id', 'string');
-        $table->addColumn('repo', 'string');
-        $table->addColumn('type', 'string');
-        $table->addColumn('payload', 'string');
+        $table = new DoctrineRawEventTable();
+        $table->setTableSchema($schema->createTable('raw_event'));
 
         // Converts $schema into sql queries and executes them
         array_map([$this->connection, 'exec'], $schema->toSql($manager->getDatabasePlatform()));
@@ -72,6 +70,17 @@ class DoctrineRawEventPersisterTest extends TestCase
         ;
 
         $this->assertEquals(1, $count);
+    }
+
+    public function testPersistNonUniqueId()
+    {
+        $id = 'e32b5f0f-489b-4670-b104-244eb8448ef6';
+        $this->connection->insert('raw_event', ['id' => $id, 'repo' => '', 'type' => '', 'payload' => '']);
+
+        $this->expectException(Domain\RawEventAlreadyExists::class);
+
+        $event = new Domain\RawEvent($id, 'NiR/GhDashboard', 'issue', ['foo' => 'bar']);
+        $this->persister->persist($event);
     }
 
     public function tearDown()

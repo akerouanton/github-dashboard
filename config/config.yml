@@ -1,0 +1,11 @@
+framework:
+    secret: "%env(SECRET)%"
+    profiler: { only_exceptions: false }
+
+doctrine:
+    dbal:
+        default_connection: default
+        connections:
+            default:
+                driver: pdo_sqlite
+                path: "%db_path%"

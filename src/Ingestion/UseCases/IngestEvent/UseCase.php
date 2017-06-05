@@ -3,21 +3,17 @@
 namespace NiR\GhDashboard\Ingestion\UseCases\IngestEvent;
 
 use NiR\GhDashboard\Ingestion\Domain\RawEvent;
+use NiR\GhDashboard\Ingestion\Domain\RawEventAlreadyExists;
 use NiR\GhDashboard\Ingestion\Domain\RawEventPersister;
-use NiR\GhDashboard\Ingestion\Domain\UuidGenerator;
 
 class UseCase
 {
     /** @var RawEventPersister */
     private $persister;
 
-    /** @var UuidGenerator */
-    private $idGenerator;
-
-    public function __construct(RawEventPersister $persister, UuidGenerator $idGenerator)
+    public function __construct(RawEventPersister $persister)
     {
-        $this->persister   = $persister;
-        $this->idGenerator = $idGenerator;
+        $this->persister = $persister;
     }
 
     public function __invoke(Request $request): Response
@@ -28,11 +24,8 @@ class UseCase
             return Response::failed($errors);
         }
 
-        $id = $this->idGenerator->generate();
-
-        $this->persister->persist(
-            new RawEvent($id, $request->getRepo(), $request->getType(), $request->getPayload())
-        );
+        $event = new RawEvent($request->getId(), $request->getRepo(), $request->getType(), $request->getPayload());
+        $this->persister->persist($event);
 
         return Response::succeeded();
     }
@@ -41,6 +34,9 @@ class UseCase
     {
         $errors = [];
 
+        if (empty($request->getId())) {
+            $errors[] = 'Missing event id.';
+        }
         if (empty($request->getRepo())) {
             $errors[] = 'Missing repo name.';
         }

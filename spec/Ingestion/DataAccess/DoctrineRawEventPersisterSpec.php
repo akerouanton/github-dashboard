@@ -1,10 +1,10 @@
 <?php
 
-namespace spec\NiR\GhDashboard\Ingestion\Infrastructure;
+namespace spec\NiR\GhDashboard\Ingestion\DataAccess;
 
 use Doctrine\DBAL\Connection;
 use NiR\GhDashboard\Ingestion\Domain;
-use NiR\GhDashboard\Ingestion\Infrastructure\DoctrineRawEventPersister;
+use NiR\GhDashboard\Ingestion\DataAccess\DoctrineRawEventPersister;
 use PhpSpec\ObjectBehavior;
 
 class DoctrineRawEventPersisterSpec extends ObjectBehavior

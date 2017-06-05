@@ -7,6 +7,9 @@ namespace NiR\GhDashboard\Ingestion\UseCases\IngestEvent;
 class Request
 {
     /** @var string */
+    private $id;
+
+    /** @var string */
     private $repo;
 
     /** @var string */
@@ -15,11 +18,17 @@ class Request
     /** @var array */
     private $payload;
 
-    public function __construct(string $repo, string $type, array $payload)
+    public function __construct(string $id, string $repo, string $type, array $payload)
     {
+        $this->id      = $id;
         $this->repo    = $repo;
         $this->type    = $type;
         $this->payload = $payload;
+    }
+
+    public function getId(): string
+    {
+        return $this->id;
     }
 
     public function getRepo(): string

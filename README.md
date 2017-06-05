@@ -5,6 +5,14 @@ This little toy project aims to provide some features Github's currently missing
 * Powerful orgs/projects feeds supporting query, custom feeds, ...
 * More insights: insights on 14 days are pretty much useless
 
+## Install & Run
+
+    composer install
+    cp .env.dist .env
+    source .env
+    export DB_PATH ENV DEBUG SECRET
+    bin/console server:start
+
 ## Architecture
 
 Github Dashboard uses Clean Architecture. Each specific domain has it's own namespace (like `Ingestion`).

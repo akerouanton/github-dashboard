@@ -1,0 +1,21 @@
+imports:
+    - { resource: parameters.yml }
+    - { resource: services/ingestion.yml }
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    NiR\GhDashboard\ControllerResolver: ~
+
+    controller_resolver:
+        alias: NiR\GhDashboard\ControllerResolver
+
+    NiR\GhDashboard\CreateSchemaCommand: ~
+
+    NiR\GhDashboard\SchemaManager:
+        arguments:
+            $tables:
+                - "@NiR\\GhDashboard\\Ingestion\\DataAccess\\DoctrineRawEventTable"
