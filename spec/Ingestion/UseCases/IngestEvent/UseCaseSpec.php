@@ -41,9 +41,9 @@ class UseCaseSpec extends ObjectBehavior
         $request->getType()->willReturn('issue');
         $request->getPayload()->willReturn(['foo' => 'bar']);
 
-        $persister->persist(
-            Argument::exact(new Domain\RawEvent('01234', 'NiR/gh-dashboard', 'issue', ['foo' => 'bar']))
-        )->shouldBeCalled();
+        $persister->persist(Argument::exact(
+            new Domain\RawEvent('01234', 'NiR/gh-dashboard', 'issue', ['foo' => 'bar'], new \DateTimeImmutable())
+        ))->shouldBeCalled();
 
         $this->__invoke($request)->shouldBeLike(UseCase\Response::succeeded());
     }

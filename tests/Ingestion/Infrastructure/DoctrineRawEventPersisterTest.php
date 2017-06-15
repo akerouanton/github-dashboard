@@ -60,7 +60,7 @@ class DoctrineRawEventPersisterTest extends TestCase
     public function testPersist()
     {
         $id    = 'e32b5f0f-489b-4670-b104-244eb8448ef6';
-        $event = new Domain\RawEvent($id, 'NiR/GhDashboard', 'issue', ['foo' => 'bar']);
+        $event = Domain\RawEvent::happenNow($id, 'NiR/GhDashboard', 'issue', ['foo' => 'bar']);
 
         $this->persister->persist($event);
 
@@ -75,11 +75,11 @@ class DoctrineRawEventPersisterTest extends TestCase
     public function testPersistNonUniqueId()
     {
         $id = 'e32b5f0f-489b-4670-b104-244eb8448ef6';
-        $this->connection->insert('raw_event', ['id' => $id, 'repo' => '', 'type' => '', 'payload' => '']);
+        $this->connection->insert('raw_event', ['id' => $id, 'repo' => '', 'type' => '', 'payload' => '', 'date' => '']);
 
         $this->expectException(Domain\RawEventAlreadyExists::class);
 
-        $event = new Domain\RawEvent($id, 'NiR/GhDashboard', 'issue', ['foo' => 'bar']);
+        $event = Domain\RawEvent::happenNow($id, 'NiR/GhDashboard', 'issue', ['foo' => 'bar']);
         $this->persister->persist($event);
     }
 

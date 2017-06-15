@@ -26,6 +26,13 @@ class DoctrineRawEventPersister implements Domain\RawEventPersister
                 'repo' => $event->getRepo(),
                 'type' => $event->getType(),
                 'payload' => json_encode($event->getPayload()),
+                'date' => $event->getDate(),
+            ], [
+                \PDO::PARAM_STR,
+                \PDO::PARAM_STR,
+                \PDO::PARAM_STR,
+                \PDO::PARAM_STR,
+                'datetime_immutable',
             ]);
         } catch (UniqueConstraintViolationException $e) {
             throw new Domain\RawEventAlreadyExists($event->getId(), $e);

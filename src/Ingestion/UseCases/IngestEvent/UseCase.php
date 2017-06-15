@@ -3,7 +3,6 @@
 namespace NiR\GhDashboard\Ingestion\UseCases\IngestEvent;
 
 use NiR\GhDashboard\Ingestion\Domain\RawEvent;
-use NiR\GhDashboard\Ingestion\Domain\RawEventAlreadyExists;
 use NiR\GhDashboard\Ingestion\Domain\RawEventPersister;
 
 class UseCase
@@ -24,7 +23,7 @@ class UseCase
             return Response::failed($errors);
         }
 
-        $event = new RawEvent($request->getId(), $request->getRepo(), $request->getType(), $request->getPayload());
+        $event = RawEvent::happenNow($request->getId(), $request->getRepo(), $request->getType(), $request->getPayload());
         $this->persister->persist($event);
 
         return Response::succeeded();

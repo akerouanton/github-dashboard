@@ -15,6 +15,7 @@ class DoctrineRawEventTable implements TableSchema
         $table->addColumn('repo', 'string');
         $table->addColumn('type', 'string');
         $table->addColumn('payload', 'string');
+        $table->addColumn('date', 'datetime_immutable');
 
         $table->setPrimaryKey(['id']);
         $table->addUniqueIndex(['id']);

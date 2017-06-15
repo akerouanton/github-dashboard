@@ -6,6 +6,7 @@ use Doctrine\DBAL\Connection;
 use NiR\GhDashboard\Ingestion\Domain;
 use NiR\GhDashboard\Ingestion\DataAccess\DoctrineRawEventPersister;
 use PhpSpec\ObjectBehavior;
+use Prophecy\Argument;
 
 class DoctrineRawEventPersisterSpec extends ObjectBehavior
 {
@@ -30,13 +31,15 @@ class DoctrineRawEventPersisterSpec extends ObjectBehavior
         $event->getRepo()->willReturn('NiR/GhDashboard');
         $event->getType()->willReturn('issue');
         $event->getPayload()->willReturn(['foo' => 'bar']);
+        $event->getDate()->willReturn($date = new \DateTime());
 
         $connection->insert('raw_event', [
             'id'      => '01234',
             'repo'    => 'NiR/GhDashboard',
             'type'    => 'issue',
             'payload' => '{"foo":"bar"}',
-        ])->shouldBeCalled();
+            'date'    => $date,
+        ], Argument::type('array'))->shouldBeCalled();
 
         $this->persist($event);
     }

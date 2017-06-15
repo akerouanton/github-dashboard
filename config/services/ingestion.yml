@@ -12,10 +12,10 @@ services:
         arguments:
             $key: "%secret%"
 
-    NiR\GhDashboard\Ingestion\Doctrine\:
+    NiR\GhDashboard\Ingestion\DataAccess\:
         resource: '../src/Ingestion/DataAccess/*'
 
-    NiR\GhDashboard\Ingestion\Doctrine\RawEventPersister:
+    NiR\GhDashboard\Ingestion\DataAccess\DoctrineRawEventPersister:
         arguments:
             $connection: '@doctrine.dbal.default_connection'
 

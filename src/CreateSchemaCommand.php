@@ -25,7 +25,7 @@ class CreateSchemaCommand extends Command
         $this
             ->setName('app:schema:create')
             ->setDescription('Creates database schema.')
-            ->addOption('remove', 'r', InputOption::VALUE_NONE | InputOption::VALUE_OPTIONAL)
+            ->addOption('remove', 'r', InputOption::VALUE_NONE)
         ;
     }
 

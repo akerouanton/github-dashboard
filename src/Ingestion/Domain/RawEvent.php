@@ -20,15 +20,19 @@ class RawEvent
     /** @var array */
     private $payload;
 
+    /** @var \DateTimeInterface */
+    private $date;
+
     /**
-     * @param string $id
-     * @param string $repo
-     * @param string $type
-     * @param array  $payload
+     * @param string             $id
+     * @param string             $repo
+     * @param string             $type
+     * @param array              $payload
+     * @param \DateTimeInterface $date
      *
      * @throws \InvalidArgumentException If one of the argument is empty
      */
-    public function __construct(string $id, string $repo, string $type, array $payload)
+    public function __construct(string $id, string $repo, string $type, array $payload, \DateTimeInterface $date)
     {
         Assert::notEmpty($id);
         Assert::notEmpty($repo);
@@ -39,6 +43,22 @@ class RawEvent
         $this->repo    = $repo;
         $this->type    = $type;
         $this->payload = $payload;
+        $this->date    = $date;
+    }
+
+    /**
+     * @param string $id
+     * @param string $repo
+     * @param string $type
+     * @param array  $payload
+     *
+     * @return self
+     *
+     * @throws \InvalidArgumentException If one of the argument is empty
+     */
+    public static function happenNow(string $id, string $repo, string $type, array $payload): self
+    {
+        return new self($id, $repo, $type, $payload, new \DateTimeImmutable());
     }
 
     public function getId(): string
@@ -59,5 +79,10 @@ class RawEvent
     public function getPayload(): array
     {
         return $this->payload;
+    }
+
+    public function getDate(): \DateTimeInterface
+    {
+        return $this->date;
     }
 }
