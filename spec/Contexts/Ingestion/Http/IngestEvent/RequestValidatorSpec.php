@@ -1,9 +1,9 @@
 <?php
 
-namespace spec\NiR\GhDashboard\Contexts\Ingestion\Http;
+namespace spec\NiR\GhDashboard\Contexts\Ingestion\Http\IngestEvent;
 
-use NiR\GhDashboard\Contexts\Ingestion\Http\RequestValidator;
-use NiR\GhDashboard\Contexts\Ingestion\Http\SignatureChecker;
+use NiR\GhDashboard\Contexts\Ingestion\Http\IngestEvent\RequestValidator;
+use NiR\GhDashboard\Contexts\Ingestion\Http\IngestEvent\SignatureChecker;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Psr\Log\LoggerInterface;

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace NiR\GhDashboard\Contexts\Ingestion\Http;
+namespace NiR\GhDashboard\Contexts\Ingestion\Http\IngestEvent;
 
-class IngestEventResponse
+class Response
 {
     private $succeed;
 
@@ -15,12 +15,12 @@ class IngestEventResponse
 
     public static function failed(): self
     {
-        return new IngestEventResponse(false);
+        return new Response(false);
     }
 
     public static function succeed(): self
     {
-        return new IngestEventResponse(true);
+        return new Response(true);
     }
 
     public function hasSucceed(): bool

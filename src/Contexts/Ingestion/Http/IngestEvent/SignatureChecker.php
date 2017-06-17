@@ -1,6 +1,6 @@
 <?php
 
-namespace NiR\GhDashboard\Contexts\Ingestion\Http;
+namespace NiR\GhDashboard\Contexts\Ingestion\Http\IngestEvent;
 
 class SignatureChecker
 {

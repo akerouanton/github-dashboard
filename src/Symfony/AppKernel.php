@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace NiR\GhDashboard\Symfony;
 
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
-use NiR\GhDashboard\Contexts\Ingestion\Http\IngestEventAction;
-use NiR\GhDashboard\Contexts\Ingestion\Http\IngestEventResponder;
+use NiR\GhDashboard\Contexts\Ingestion\Http\IngestEvent;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
@@ -57,7 +56,7 @@ class AppKernel extends \Symfony\Component\HttpKernel\Kernel
     {
         $ingestEvent = (new Route(
             '/hook',
-            ['_action' => IngestEventAction::class, '_responder' => IngestEventResponder::class]
+            ['_action' => IngestEvent\Action::class, '_responder' => IngestEvent\Responder::class]
         ))->setMethods(['POST']);
 
         $routes->addRoute($ingestEvent);

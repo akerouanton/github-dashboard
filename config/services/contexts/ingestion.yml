@@ -5,10 +5,12 @@ services:
         public: false
 
     NiR\GhDashboard\Contexts\Ingestion\Http\:
-        resource: '../../../src/Contexts/Ingestion/Http/*{Action,Responder}.php'
+        resource: '../../../src/Contexts/Ingestion/Http/*/*{Action,Responder}.php'
         public: true
 
-    NiR\GhDashboard\Contexts\Ingestion\Http\SignatureChecker:
+    NiR\GhDashboard\Contexts\Ingestion\Http\IngestEvent\RequestValidator: ~
+
+    NiR\GhDashboard\Contexts\Ingestion\Http\IngestEvent\SignatureChecker:
         arguments:
             $key: "%secret%"
 

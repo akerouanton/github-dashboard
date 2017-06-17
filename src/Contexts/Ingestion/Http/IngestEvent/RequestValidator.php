@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace NiR\GhDashboard\Contexts\Ingestion\Http;
+namespace NiR\GhDashboard\Contexts\Ingestion\Http\IngestEvent;
 
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;

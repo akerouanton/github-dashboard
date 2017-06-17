@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace NiR\GhDashboard\Contexts\Ingestion\Http;
+namespace NiR\GhDashboard\Contexts\Ingestion\Http\IngestEvent;
 
 use NiR\GhDashboard\Contexts\Ingestion\UseCases\IngestEvent as UseCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 
-class IngestEventAction
+class Action
 {
     /** @var RequestValidator */
     private $validator;
@@ -26,10 +26,10 @@ class IngestEventAction
         $this->logger    = $logger;
     }
 
-    public function __invoke(Request $request): IngestEventResponse
+    public function __invoke(Request $request): Response
     {
         if (!$this->validator->validate($request)) {
-            return IngestEventResponse::failed();
+            return Response::failed();
         }
 
         $deliveryId = $request->headers->get('X-Github-Delivery');
@@ -39,11 +39,11 @@ class IngestEventAction
         try {
             $decoded = $this->jsonDecode($payload);
         } catch (\InvalidArgumentException $e) {
-            return IngestEventResponse::failed();
+            return Response::failed();
         }
 
         if (!isset($decoded['repository'], $decoded['repository']['full_name'])) {
-            return IngestEventResponse::failed();
+            return Response::failed();
         }
 
         $response = $this->useCase->__invoke(new UseCase\Request(
@@ -53,7 +53,7 @@ class IngestEventAction
             $decoded
         ));
 
-        return $response->isSuccessful() ? IngestEventResponse::succeed() : IngestEventResponse::failed();
+        return $response->isSuccessful() ? Response::succeed() : Response::failed();
     }
 
     private function jsonDecode($json)

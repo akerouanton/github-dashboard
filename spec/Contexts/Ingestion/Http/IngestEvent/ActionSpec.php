@@ -1,11 +1,10 @@
 <?php
 
-namespace spec\NiR\GhDashboard\Contexts\Ingestion\Http;
+namespace spec\NiR\GhDashboard\Contexts\Ingestion\Http\IngestEvent;
 
-use NiR\GhDashboard\Contexts\Ingestion\Http\IngestEventAction;
-use NiR\GhDashboard\Contexts\Ingestion\Http\IngestEventResponse;
-use NiR\GhDashboard\Contexts\Ingestion\Http\RequestValidator;
-use NiR\GhDashboard\Contexts\Ingestion\Http\SignatureChecker;
+use NiR\GhDashboard\Contexts\Ingestion\Http\IngestEvent\Action;
+use NiR\GhDashboard\Contexts\Ingestion\Http\IngestEvent\Response;
+use NiR\GhDashboard\Contexts\Ingestion\Http\IngestEvent\RequestValidator;
 use NiR\GhDashboard\Contexts\Ingestion\UseCases\IngestEvent as UseCase;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
@@ -13,7 +12,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 
-class IngestEventActionSpec extends ObjectBehavior
+class ActionSpec extends ObjectBehavior
 {
     function let(RequestValidator $validator, UseCase\UseCase $useCase, LoggerInterface $logger)
     {
@@ -22,7 +21,7 @@ class IngestEventActionSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType(IngestEventAction::class);
+        $this->shouldHaveType(Action::class);
     }
 
     function it_returns_a_failed_response_when_json_payload_is_not_decodable(
@@ -40,7 +39,7 @@ class IngestEventActionSpec extends ObjectBehavior
         $headersBag->get('X-Github-Event')->willReturn('ping');
         $requestBag->get('payload')->willReturn('{"repository"');
 
-        $this->__invoke($request)->shouldBeLike(IngestEventResponse::failed());
+        $this->__invoke($request)->shouldBeLike(Response::failed());
     }
 
     function it_returns_a_failed_response_when_json_payload_does_not_contain_repository_name(
@@ -58,7 +57,7 @@ class IngestEventActionSpec extends ObjectBehavior
         $headersBag->get('X-Github-Event')->willReturn('ping');
         $requestBag->get('payload')->willReturn('{}');
 
-        $this->__invoke($request)->shouldBeLike(IngestEventResponse::failed());
+        $this->__invoke($request)->shouldBeLike(Response::failed());
     }
 
     function it_returns_a_successful_response_when_use_case_succeed(
@@ -93,6 +92,6 @@ class IngestEventActionSpec extends ObjectBehavior
 
         $response->isSuccessful()->willReturn(true);
 
-        $this->__invoke($request)->shouldBeLike(IngestEventResponse::succeed());
+        $this->__invoke($request)->shouldBeLike(Response::succeed());
     }
 }

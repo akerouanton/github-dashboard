@@ -1,16 +1,16 @@
 <?php
 
-namespace spec\NiR\GhDashboard\Contexts\Ingestion\Http;
+namespace spec\NiR\GhDashboard\Contexts\Ingestion\Http\IngestEvent;
 
-use NiR\GhDashboard\Contexts\Ingestion\Http\IngestEventResponse;
+use NiR\GhDashboard\Contexts\Ingestion\Http\IngestEvent\Response;
 use PhpSpec\ObjectBehavior;
 
-class IngestEventResponseSpec extends ObjectBehavior
+class ResponseSpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
         $this->beConstructedThrough('succeed');
-        $this->shouldHaveType(IngestEventResponse::class);
+        $this->shouldHaveType(Response::class);
     }
 
     function it_has_succeed()
