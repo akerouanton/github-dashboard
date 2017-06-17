@@ -1,6 +1,6 @@
 imports:
     - { resource: parameters.yml }
-    - { resource: services/ingestion.yml }
+    - { resource: services/contexts/ingestion.yml }
 
 services:
     _defaults:
@@ -18,4 +18,4 @@ services:
     NiR\GhDashboard\SchemaManager:
         arguments:
             $tables:
-                - "@NiR\\GhDashboard\\Ingestion\\DataAccess\\DoctrineRawEventTable"
+                - "@NiR\\GhDashboard\\Contexts\\Ingestion\\DataAccess\\DoctrineRawEventTable"
