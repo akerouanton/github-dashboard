@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace NiR\GhDashboard;
+namespace NiR\GhDashboard\Symfony;
 
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
-use NiR\GhDashboard\Ingestion\Http\IngestEventAction;
-use NiR\GhDashboard\Ingestion\Http\IngestEventResponder;
+use NiR\GhDashboard\Contexts\Ingestion\Http\IngestEventAction;
+use NiR\GhDashboard\Contexts\Ingestion\Http\IngestEventResponder;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
@@ -48,7 +48,7 @@ class AppKernel extends \Symfony\Component\HttpKernel\Kernel
 
     protected function configureContainer(ContainerBuilder $c, LoaderInterface $loader)
     {
-        $loader = new YamlFileLoader($c, new FileLocator(__DIR__ . '/../config'));
+        $loader = new YamlFileLoader($c, new FileLocator(__DIR__ . '/../../config'));
         $loader->load('services.yml');
         $loader->load('config.yml');
     }
@@ -65,11 +65,11 @@ class AppKernel extends \Symfony\Component\HttpKernel\Kernel
 
     public function getLogDir()
     {
-        return __DIR__ . '/../var/logs';
+        return __DIR__ . '/../../var/logs';
     }
 
     public function getCacheDir()
     {
-        return __DIR__ . '/../var/cache';
+        return __DIR__ . '/../../var/cache';
     }
 }

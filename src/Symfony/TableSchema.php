@@ -1,6 +1,6 @@
 <?php
 
-namespace NiR\GhDashboard;
+namespace NiR\GhDashboard\Symfony;
 
 use Doctrine\DBAL\Schema\Table;
 

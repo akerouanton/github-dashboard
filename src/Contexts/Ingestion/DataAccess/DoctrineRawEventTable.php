@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace NiR\GhDashboard\Contexts\Ingestion\DataAccess;
 
 use Doctrine\DBAL\Schema\Table;
-use NiR\GhDashboard\TableSchema;
+use NiR\GhDashboard\Symfony\TableSchema;
 
 class DoctrineRawEventTable implements TableSchema
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace NiR\GhDashboard;
+namespace NiR\GhDashboard\Symfony;
 
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;

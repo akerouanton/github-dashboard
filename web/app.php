@@ -6,7 +6,7 @@ require __DIR__ . '/../vendor/autoload.php';
 
 $env = getenv('ENV') ?: 'prod';
 $debug = boolval(getenv('DEBUG'));
-$kernel = new \NiR\GhDashboard\AppKernel($env, $debug);
+$kernel = new \NiR\GhDashboard\Symfony\AppKernel($env, $debug);
 
 $request = Request::createFromGlobals();
 $response = $kernel->handle($request);

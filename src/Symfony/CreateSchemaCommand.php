@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace NiR\GhDashboard;
+namespace NiR\GhDashboard\Symfony;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;

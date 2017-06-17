@@ -8,14 +8,14 @@ services:
         autoconfigure: true
         public: false
 
-    NiR\GhDashboard\ControllerResolver: ~
+    NiR\GhDashboard\Symfony\ControllerResolver: ~
 
     controller_resolver:
-        alias: NiR\GhDashboard\ControllerResolver
+        alias: NiR\GhDashboard\Symfony\ControllerResolver
 
-    NiR\GhDashboard\CreateSchemaCommand: ~
+    NiR\GhDashboard\Symfony\CreateSchemaCommand: ~
 
-    NiR\GhDashboard\SchemaManager:
+    NiR\GhDashboard\Symfony\SchemaManager:
         arguments:
             $tables:
                 - "@NiR\\GhDashboard\\Contexts\\Ingestion\\DataAccess\\DoctrineRawEventTable"

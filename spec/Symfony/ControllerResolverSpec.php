@@ -1,8 +1,8 @@
 <?php
 
-namespace spec\NiR\GhDashboard;
+namespace spec\NiR\GhDashboard\Symfony;
 
-use NiR\GhDashboard\ControllerResolver;
+use NiR\GhDashboard\Symfony\ControllerResolver;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Psr\Log\LoggerInterface;
