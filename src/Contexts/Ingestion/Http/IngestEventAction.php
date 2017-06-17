@@ -10,43 +10,35 @@ use Symfony\Component\HttpFoundation\Request;
 
 class IngestEventAction
 {
+    /** @var RequestValidator */
+    private $validator;
+
+    /** @var UseCase\UseCase */
     private $useCase;
 
+    /** @var LoggerInterface */
     private $logger;
 
-    private $signatureChecker;
-
-    public function __construct(UseCase\UseCase $useCase, LoggerInterface $logger, SignatureChecker $signatureChecker)
+    public function __construct(RequestValidator $validator, UseCase\UseCase $useCase, LoggerInterface $logger)
     {
-        $this->useCase          = $useCase;
-        $this->logger           = $logger;
-        $this->signatureChecker = $signatureChecker;
+        $this->validator = $validator;
+        $this->useCase   = $useCase;
+        $this->logger    = $logger;
     }
 
     public function __invoke(Request $request): IngestEventResponse
     {
-        if (!$this->validateRequest($request)) {
+        if (!$this->validator->validate($request)) {
             return IngestEventResponse::failed();
         }
 
-        $signature  = $request->headers->get('X-Hub-Signature');
         $deliveryId = $request->headers->get('X-Github-Delivery');
         $eventType  = $request->headers->get('X-Github-Event');
         $payload    = $request->request->get('payload');
 
-        if (!$this->signatureChecker->validate($signature, $payload)) {
-            $this->logger->info(
-                'Request signature does not match signed payload.',
-                ['signature' => $signature, 'payload' => $payload]
-            );
-
-            return IngestEventResponse::failed();
-        }
-
-        // Decode payload or return a failed response
         try {
-            $decoded = json_decode($payload, true);
-        } catch (\Throwable $e) {
+            $decoded = $this->jsonDecode($payload);
+        } catch (\InvalidArgumentException $e) {
             return IngestEventResponse::failed();
         }
 
@@ -54,29 +46,24 @@ class IngestEventAction
             return IngestEventResponse::failed();
         }
 
-        // Execute use case or return failed response (and log exception)
-        try {
-            $response = $this->useCase->__invoke(new UseCase\Request(
-                $deliveryId,
-                $decoded['repository']['full_name'],
-                $eventType,
-                $decoded
-            ));
-        } catch (\Throwable $e) {
-            $this->logger->error('Exception thrown during IngestEventAction.', ['exception' => $e]);
-
-            return IngestEventResponse::failed();
-        }
+        $response = $this->useCase->__invoke(new UseCase\Request(
+            $deliveryId,
+            $decoded['repository']['full_name'],
+            $eventType,
+            $decoded
+        ));
 
         return $response->isSuccessful() ? IngestEventResponse::succeed() : IngestEventResponse::failed();
     }
 
-    private function validateRequest(Request $request): bool
+    private function jsonDecode($json)
     {
-        return $request->headers->has('X-Hub-Signature')
-            && $request->headers->has('X-Github-Delivery')
-            && $request->headers->has('X-Github-Event')
-            && $request->request->has('payload')
-        ;
+        $decoded = json_decode($json, true);
+
+        if (null === $decoded && json_last_error() !== null) {
+            throw new \InvalidArgumentException(sprintf('Unable to decode json. Error: %s', json_last_error_msg()));
+        }
+
+        return $decoded;
     }
 }
