@@ -22,7 +22,9 @@
         "memio/twig-template-engine": "~2@dev",
         "memio/validator": "~2@dev",
         "phpunit/phpunit": "~6",
-        "symfony/web-server-bundle": "^3.3"
+        "symfony/web-server-bundle": "^3.3",
+        "behat/behat": "^3.3",
+        "php-http/httplug": "^1.1"
     },
     "license": "MIT",
     "authors": [
@@ -38,6 +40,11 @@
     "autoload": {
         "psr-4": {
             "NiR\\GhDashboard\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "NiR\\GhDashboard\\Behat\\": "features/"
         }
     }
 }
