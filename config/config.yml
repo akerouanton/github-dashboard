@@ -9,3 +9,11 @@ doctrine:
             default:
                 driver: pdo_sqlite
                 path: "%db_path%"
+
+monolog:
+    handlers:
+        main:
+            type: stream
+            path: "%kernel.project_dir%/var/logs/%kernel.environment%.log"
+            level: DEBUG
+            formatter: "monolog.formatter.line"
