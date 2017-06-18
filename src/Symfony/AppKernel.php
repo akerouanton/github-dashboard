@@ -6,16 +6,15 @@ namespace NiR\GhDashboard\Symfony;
 
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use NiR\GhDashboard\Contexts\Ingestion\Http\IngestEvent;
-use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Bundle\MonologBundle\MonologBundle;
 use Symfony\Bundle\WebServerBundle\WebServerBundle;
-use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\HttpKernel\Config\FileLocator;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollectionBuilder;
 
@@ -29,7 +28,6 @@ class AppKernel extends \Symfony\Component\HttpKernel\Kernel
             new FrameworkBundle(),
             new MonologBundle(),
             new DoctrineBundle(),
-            // Transforms PSR-7 envelopes into Symfony equivalent
             new SensioFrameworkExtraBundle(),
         ];
 
@@ -40,14 +38,9 @@ class AppKernel extends \Symfony\Component\HttpKernel\Kernel
         return $bundles;
     }
 
-    protected function getLogger(): LoggerInterface
-    {
-        return $this->container->get('monolog.logger.app');
-    }
-
     protected function configureContainer(ContainerBuilder $c, LoaderInterface $loader)
     {
-        $loader = new YamlFileLoader($c, new FileLocator(__DIR__ . '/../../config'));
+        $loader = new YamlFileLoader($c, new FileLocator($this, __DIR__ . '/../../config'));
         $loader->load('services.yml');
         $loader->load('config.yml');
     }

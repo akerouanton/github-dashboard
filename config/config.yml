@@ -1,6 +1,6 @@
 framework:
     secret: "%env(SECRET)%"
-    profiler: { only_exceptions: false }
+    profiler: ~
 
 doctrine:
     dbal:

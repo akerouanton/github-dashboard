@@ -19,3 +19,5 @@ services:
         arguments:
             $tables:
                 - "@NiR\\GhDashboard\\Contexts\\Ingestion\\DataAccess\\DoctrineRawEventTable"
+
+    NiR\GhDashboard\Symfony\ExceptionListener: ~
