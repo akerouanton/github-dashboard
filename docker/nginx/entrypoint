@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [[ "$(id -u)" = "0" && -n "${PHP_UID}" && -n "${PHP_GID}" ]]; then
+    cat >/usr/local/etc/php-fpm.d/zz-user.conf <<-EOF
+[www]
+user = ${PHP_UID}
+group = ${PHP_GID}
+EOF
+fi
+
+exec "$@"

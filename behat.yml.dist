@@ -8,7 +8,7 @@ default:
         '': %paths.base%/features/Contexts
     extensions:
           NiR\GhDashboard\Behat\ApiExtension:
-              base_url: http://localhost:8000/
+              base_url: http://localhost/
           Behat\Symfony2Extension:
                 kernel:
                     class: NiR\GhDashboard\Symfony\AppKernel

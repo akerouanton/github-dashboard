@@ -1,0 +1,19 @@
+version: '2.1'
+
+services:
+    api:
+        image: php:7.1-fpm
+        env_file: .env
+        entrypoint: /entrypoint
+        working_dir: /var/www/app
+        command: ["php-fpm"]
+        volumes:
+            - ./docker/nginx/entrypoint:/entrypoint
+            - ./:/var/www/app/
+
+    webserver:
+        image: nginx:1.13.1
+        ports:
+            - '80:80'
+        volumes:
+            - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
