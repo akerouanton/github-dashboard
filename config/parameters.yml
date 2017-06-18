@@ -1,3 +1,4 @@
 parameters:
     db_path: "%kernel.project_dir%/var/%kernel.environment%.sqlite"
-    secret: "my_super_secret_key"
+    # github_secret: "%env(GITHUB_SECRET)%"
+    github_secret: "my_super_secret_key"

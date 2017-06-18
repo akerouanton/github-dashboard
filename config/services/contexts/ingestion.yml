@@ -12,7 +12,7 @@ services:
 
     NiR\GhDashboard\Contexts\Ingestion\Http\IngestEvent\SignatureChecker:
         arguments:
-            $key: "%secret%"
+            $key: "%github_secret%"
 
     NiR\GhDashboard\Contexts\Ingestion\DataAccess\:
         resource: '../../../src/Contexts/Ingestion/DataAccess/*'
