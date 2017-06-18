@@ -1,4 +1,14 @@
 default:
+    suites:
+        ingestion:
+            contexts:
+                - NiR\GhDashboard\Behat\ApiExtension\Context\ApiContext
+                - NiR\GhDashboard\Behat\Contexts\IngestionContext
+    autoload:
+        '': %paths.base%/features/Contexts
     extensions:
           NiR\GhDashboard\Behat\ApiExtension:
               base_url: http://localhost:8000/
+          Behat\Symfony2Extension:
+                kernel:
+                    class: NiR\GhDashboard\Symfony\AppKernel
