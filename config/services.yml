@@ -15,9 +15,13 @@ services:
 
     NiR\GhDashboard\Symfony\CreateSchemaCommand: ~
 
+    NiR\GhDashboard\Symfony\HttpMessageConverter: ~
+
     NiR\GhDashboard\Symfony\SchemaManager:
         arguments:
             $tables:
                 - "@NiR\\GhDashboard\\Contexts\\Ingestion\\DataAccess\\DoctrineRawEventTable"
 
     NiR\GhDashboard\Symfony\ExceptionListener: ~
+
+    Http\Message\MessageFactory\DiactorosMessageFactory: ~

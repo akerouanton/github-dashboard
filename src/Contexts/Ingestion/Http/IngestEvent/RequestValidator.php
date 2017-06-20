@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace NiR\GhDashboard\Contexts\Ingestion\Http\IngestEvent;
 
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpFoundation\Request;
 
 class RequestValidator
 {
@@ -21,20 +21,27 @@ class RequestValidator
         $this->logger           = $logger;
     }
 
-    public function validate(Request $request): bool
+    public function validate(ServerRequestInterface $request, string $payload): bool
     {
-        if (!$request->headers->has('X-Hub-Signature')
-            || !$request->headers->has('X-Github-Delivery')
-            || !$request->headers->has('X-Github-Event')
-            || !$request->request->has('payload')
+        if (!$request->hasHeader('X-Hub-Signature')
+            || !$request->hasHeader('X-GitHub-Delivery')
+            || !$request->hasHeader('X-GitHub-Event')
+            || empty($payload)
         ) {
             return false;
         }
 
-        $signature = $request->headers->get('X-Hub-Signature');
-        $payload   = $request->request->get('payload');
+        $signature = $request->getHeader('X-Hub-Signature')[0];
+        $deliveryId = $request->getHeader('X-GitHub-Delivery')[0];
+        $eventType = $request->getHeader('X-GitHub-Event')[0];
 
-        if (!$this->signatureChecker->validate($signature, $payload)) {
+        if (strpos($signature, '=') === false || empty($deliveryId) || empty($eventType)) {
+            return false;
+        }
+
+        list(,$hmac) = explode('=', $signature);
+
+        if (!$this->signatureChecker->validate($hmac, $payload)) {
             $this->logger->info(
                 'Request signature does not match signed payload.',
                 ['signature' => $signature, 'payload' => $payload]

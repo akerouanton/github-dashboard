@@ -3,6 +3,7 @@
 namespace spec\NiR\GhDashboard\Symfony;
 
 use NiR\GhDashboard\Symfony\ControllerResolver;
+use NiR\GhDashboard\Symfony\HttpMessageConverter;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use Psr\Log\LoggerInterface;
@@ -13,9 +14,9 @@ use Symfony\Component\HttpKernel\Controller\ControllerResolverInterface;
 
 class ControllerResolverSpec extends ObjectBehavior
 {
-    function let(Container $container, LoggerInterface $logger)
+    function let(Container $container, LoggerInterface $logger, HttpMessageConverter $messageConverter)
     {
-        $this->beConstructedWith($container, $logger);
+        $this->beConstructedWith($container, $logger, $messageConverter);
     }
 
     function it_is_initializable()

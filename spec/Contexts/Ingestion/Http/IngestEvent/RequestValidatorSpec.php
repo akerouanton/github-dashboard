@@ -6,6 +6,8 @@ use NiR\GhDashboard\Contexts\Ingestion\Http\IngestEvent\RequestValidator;
 use NiR\GhDashboard\Contexts\Ingestion\Http\IngestEvent\SignatureChecker;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\StreamInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,88 +24,94 @@ class RequestValidatorSpec extends ObjectBehavior
         $this->shouldHaveType(RequestValidator::class);
     }
 
-    function it_invalidates_a_request_when_headers_does_not_contain_signature(
-        Request $request,
-        ParameterBag $headersBag,
-        ParameterBag $requestBag
-    ) {
-        $request->headers = $headersBag;
-        $request->request = $requestBag;
+    function it_invalidates_a_request_when_headers_does_not_contain_signature(ServerRequestInterface $request)
+    {
+        $request->hasHeader('X-Hub-Signature')->willReturn(false);
+        $request->hasHeader('X-GitHub-Delivery')->willReturn(true);
+        $request->hasHeader('X-GitHub-Event')->willReturn(true);
 
-        $headersBag->has('X-Hub-Signature')->willReturn(false);
-        $headersBag->has('X-Github-Delivery')->willReturn(true);
-        $headersBag->has('X-Github-Event')->willReturn(true);
-        $requestBag->has('payload')->willReturn(true);
-
-        $this->validate($request)->shouldReturn(false);
+        $this->validate($request, 'payload')->shouldReturn(false);
     }
 
-    function it_invalidates_a_request_when_headers_does_not_contain_delivery_id(
-        Request $request,
-        ParameterBag $headersBag,
-        ParameterBag $requestBag
-    ) {
-        $request->headers = $headersBag;
-        $request->request = $requestBag;
+    function it_invalidates_a_request_when_headers_does_not_contain_delivery_id(ServerRequestInterface $request)
+    {
+        $request->hasHeader('X-Hub-Signature')->willReturn(true);
+        $request->hasHeader('X-GitHub-Delivery')->willReturn(false);
+        $request->hasHeader('X-GitHub-Event')->willReturn(true);
 
-        $headersBag->has('X-Hub-Signature')->willReturn(true);
-        $headersBag->has('X-Github-Delivery')->willReturn(false);
-        $headersBag->has('X-Github-Event')->willReturn(true);
-        $requestBag->has('payload')->willReturn(true);
-
-        $this->validate($request)->shouldReturn(false);
+        $this->validate($request, 'payload')->shouldReturn(false);
     }
 
-    function it_invalidates_a_request_when_headers_does_not_contain_event_type(
-        Request $request,
-        ParameterBag $headersBag,
-        ParameterBag $requestBag
-    ) {
-        $request->headers = $headersBag;
-        $request->request = $requestBag;
+    function it_invalidates_a_request_when_headers_does_not_contain_event_type(ServerRequestInterface $request)
+    {
+        $request->hasHeader('X-Hub-Signature')->willReturn(true);
+        $request->hasHeader('X-GitHub-Delivery')->willReturn(true);
+        $request->hasHeader('X-GitHub-Event')->willReturn(false);
 
-        $headersBag->has('X-Hub-Signature')->willReturn(true);
-        $headersBag->has('X-Github-Delivery')->willReturn(true);
-        $headersBag->has('X-Github-Event')->willReturn(false);
-        $requestBag->has('payload')->willReturn(true);
-
-        $this->validate($request)->shouldReturn(false);
+        $this->validate($request, 'payload')->shouldReturn(false);
     }
 
-    function it_invalidates_a_request_when_it_does_not_contain_payload(
-        Request $request,
-        ParameterBag $headersBag,
-        ParameterBag $requestBag
+    function it_invalidates_a_request_when_the_payload_is_empty(ServerRequestInterface $request)
+    {
+        $request->hasHeader('X-Hub-Signature')->willReturn(true);
+        $request->hasHeader('X-GitHub-Delivery')->willReturn(true);
+        $request->hasHeader('X-GitHub-Event')->willReturn(false);
+
+        $this->validate($request, '')->shouldReturn(false);
+    }
+
+    function it_invalidates_a_request_when_signature_does_not_contain_any_equal_separator_between_algo_and_hash(
+        ServerRequestInterface $request
     ) {
-        $request->headers = $headersBag;
-        $request->request = $requestBag;
+        $request->hasHeader('X-Hub-Signature')->willReturn(true);
+        $request->hasHeader('X-GitHub-Delivery')->willReturn(true);
+        $request->hasHeader('X-GitHub-Event')->willReturn(true);
 
-        $headersBag->has('X-Hub-Signature')->willReturn(true);
-        $headersBag->has('X-Github-Delivery')->willReturn(true);
-        $headersBag->has('X-Github-Event')->willReturn(true);
-        $requestBag->has('payload')->willReturn(false);
+        $request->getHeader('X-Hub-Signature')->willReturn(['hmac_digest']);
+        $request->getHeader('X-GitHub-Delivery')->willReturn(['c829d500-499c-11e7-9fc5-ea52b89e9429']);
+        $request->getHeader('X-GitHub-Event')->willReturn(['ping']);
 
-        $this->validate($request)->shouldReturn(false);
+        $this->validate($request, 'payload')->shouldReturn(false);
+    }
+
+    function it_invalidates_a_request_when_the_delivery_id_is_empty(ServerRequestInterface $request)
+    {
+        $request->hasHeader('X-Hub-Signature')->willReturn(true);
+        $request->hasHeader('X-GitHub-Delivery')->willReturn(true);
+        $request->hasHeader('X-GitHub-Event')->willReturn(true);
+
+        $request->getHeader('X-Hub-Signature')->willReturn(['sha1=hmac_digest']);
+        $request->getHeader('X-GitHub-Delivery')->willReturn(['']);
+        $request->getHeader('X-GitHub-Event')->willReturn(['ping']);
+
+        $this->validate($request, 'payload')->shouldReturn(false);
+    }
+
+    function it_invalidates_a_request_when_the_event_type_is_empty(ServerRequestInterface $request)
+    {
+        $request->hasHeader('X-Hub-Signature')->willReturn(true);
+        $request->hasHeader('X-GitHub-Delivery')->willReturn(true);
+        $request->hasHeader('X-GitHub-Event')->willReturn(true);
+
+        $request->getHeader('X-Hub-Signature')->willReturn(['sha1=hmac_digest']);
+        $request->getHeader('X-GitHub-Delivery')->willReturn(['c829d500-499c-11e7-9fc5-ea52b89e9429']);
+        $request->getHeader('X-GitHub-Event')->willReturn(['']);
+
+        $this->validate($request, 'payload')->shouldReturn(false);
     }
 
     function it_invalidates_a_request_when_signature_is_not_valid(
-        Request $request,
-        ParameterBag $headersBag,
-        ParameterBag $requestBag,
+        ServerRequestInterface $request,
         $signatureChecker,
         $logger
     ) {
-        $request->headers = $headersBag;
-        $request->request = $requestBag;
+        $request->hasHeader('X-Hub-Signature')->willReturn(true);
+        $request->hasHeader('X-GitHub-Delivery')->willReturn(true);
+        $request->hasHeader('X-GitHub-Event')->willReturn(true);
 
-        $headersBag->has('X-Hub-Signature')->willReturn(true);
-        $headersBag->has('X-Github-Delivery')->willReturn(true);
-        $headersBag->has('X-Github-Event')->willReturn(true);
-        $requestBag->has('payload')->willReturn(true);
-        $headersBag->get('X-Hub-Signature')->willReturn('hmac_digest');
-        $headersBag->get('X-Github-Delivery')->willReturn('c829d500-499c-11e7-9fc5-ea52b89e9429');
-        $headersBag->get('X-Github-Event')->willReturn('ping');
-        $requestBag->get('payload')->willReturn('{"repository":{"full_name":"NiR/github-dashboard"}}');
+        $request->getHeader('X-Hub-Signature')->willReturn(['sha1=hmac_digest']);
+        $request->getHeader('X-GitHub-Delivery')->willReturn(['c829d500-499c-11e7-9fc5-ea52b89e9429']);
+        $request->getHeader('X-GitHub-Event')->willReturn(['ping']);
 
         $signatureChecker
             ->validate('hmac_digest', '{"repository":{"full_name":"NiR/github-dashboard"}}')
@@ -112,9 +120,12 @@ class RequestValidatorSpec extends ObjectBehavior
 
         $logger->info(
             Argument::type('string'),
-            Argument::exact(['payload' => '{"repository":{"full_name":"NiR/github-dashboard"}}', 'signature' => 'hmac_digest'])
+            Argument::exact(['payload' => '{"repository":{"full_name":"NiR/github-dashboard"}}', 'signature' => 'sha1=hmac_digest'])
         )->shouldBeCalled();
 
-        $this->validate($request)->shouldReturn(false);
+        $this
+            ->validate($request, '{"repository":{"full_name":"NiR/github-dashboard"}}')
+            ->shouldReturn(false)
+        ;
     }
 }

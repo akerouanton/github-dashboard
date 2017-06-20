@@ -4,12 +4,22 @@ declare(strict_types=1);
 
 namespace NiR\GhDashboard\Contexts\Ingestion\Http\IngestEvent;
 
-use Symfony\Component\HttpFoundation\Response as HttpResponse;
+use Http\Message\ResponseFactory;
+use Psr\Http\Message\ResponseInterface as HttpResponseInterface;
 
 class Responder
 {
-    public function __invoke(Response $response): HttpResponse
+    /** @var ResponseFactory */
+    private $factory;
+
+    public function __construct(ResponseFactory $factory)
     {
-        return $response->hasSucceed() ? new HttpResponse() : new HttpResponse('', 400);
+        $this->factory = $factory;
+    }
+
+    public function __invoke(Response $response): HttpResponseInterface
+    {
+
+        return $response->hasSucceed() ? $this->factory->createResponse(200) : $this->factory->createResponse(400);
     }
 }

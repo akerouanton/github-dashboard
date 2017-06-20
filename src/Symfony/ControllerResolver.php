@@ -12,14 +12,23 @@ use Symfony\Component\HttpKernel\Controller\ControllerResolverInterface;
 
 class ControllerResolver implements ControllerResolverInterface
 {
+    /** @var ContainerInterface */
     private $container;
 
+    /** @var LoggerInterface */
     private $logger;
 
-    public function __construct(ContainerInterface $container, LoggerInterface $logger)
-    {
-        $this->container = $container;
-        $this->logger    = $logger;
+    /** @var HttpMessageConverter */
+    private $messageConverter;
+
+    public function __construct(
+        ContainerInterface $container,
+        LoggerInterface $logger,
+        HttpMessageConverter $messageConverter
+    ) {
+        $this->container        = $container;
+        $this->logger           = $logger;
+        $this->messageConverter = $messageConverter;
     }
 
     public function getController(Request $request)
@@ -36,7 +45,10 @@ class ControllerResolver implements ControllerResolverInterface
             $action    = $this->container->get($actionName);
             $responder = $this->container->get($responderName);
 
-            return $responder($action($request));
+            $psrRequest = $this->messageConverter->convertRequest($request);
+            $psrResponse = $responder($action($psrRequest));
+
+            return $this->messageConverter->convertResponse($psrResponse);
         };
     }
 

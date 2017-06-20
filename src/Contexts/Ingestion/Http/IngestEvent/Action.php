@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace NiR\GhDashboard\Contexts\Ingestion\Http\IngestEvent;
 
 use NiR\GhDashboard\Contexts\Ingestion\UseCases\IngestEvent as UseCase;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpFoundation\Request;
 
 class Action
 {
@@ -26,18 +26,16 @@ class Action
         $this->logger    = $logger;
     }
 
-    public function __invoke(Request $request): Response
+    public function __invoke(ServerRequestInterface $request): Response
     {
-        if (!$this->validator->validate($request)) {
+        $body = (string) $request->getBody();
+
+        if (!$this->validator->validate($request, $body)) {
             return Response::failed();
         }
 
-        $deliveryId = $request->headers->get('X-Github-Delivery');
-        $eventType  = $request->headers->get('X-Github-Event');
-        $payload    = $request->request->get('payload');
-
         try {
-            $decoded = $this->jsonDecode($payload);
+            $decoded = $this->jsonDecode($body);
         } catch (\InvalidArgumentException $e) {
             return Response::failed();
         }
@@ -46,12 +44,11 @@ class Action
             return Response::failed();
         }
 
-        $response = $this->useCase->__invoke(new UseCase\Request(
-            $deliveryId,
-            $decoded['repository']['full_name'],
-            $eventType,
-            $decoded
-        ));
+        $repository = $decoded['repository']['full_name'];
+        $deliveryId = $request->getHeader('X-GitHub-Delivery')[0];
+        $eventType = $request->getHeader('X-GitHub-Event')[0];
+
+        $response = $this->useCase->__invoke(new UseCase\Request($deliveryId, $repository, $eventType, $decoded));
 
         return $response->isSuccessful() ? Response::succeed() : Response::failed();
     }
