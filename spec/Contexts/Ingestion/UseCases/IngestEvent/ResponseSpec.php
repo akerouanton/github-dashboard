@@ -18,6 +18,8 @@ class ResponseSpec extends ObjectBehavior
         $this->beConstructedThrough('succeed');
 
         $this->hasErrors()->shouldReturn(false);
+        $this->isSuccessful()->shouldReturn(true);
+        $this->getErrors()->shouldReturn([]);
     }
 
     function it_represents_a_failed_ingestion()
@@ -25,6 +27,7 @@ class ResponseSpec extends ObjectBehavior
         $this->beConstructedThrough('failed', [['error1', 'error2']]);
 
         $this->hasErrors()->shouldReturn(true);
+        $this->isSuccessful()->shouldReturn(false);
         $this->getErrors()->shouldReturn(['error1', 'error2']);
     }
 }

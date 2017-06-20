@@ -26,7 +26,7 @@ class Response
 
     public function isSuccessful(): bool
     {
-        return $this->hasErrors();
+        return !$this->hasErrors();
     }
 
     public function hasErrors(): bool
